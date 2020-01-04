@@ -19,14 +19,11 @@ class CreateReservationsTable extends Migration
             $table->bigInteger('mobile_number');
             $table->bigInteger('telephone');
             $table->integer('age');
-            $table->uuid('hospitalization_id');
             $table->softDeletes();
             $table->timestamps();
 
             $table->primary('id');
 
-            $table->foreign('hospitalization_id')->references('id')->on('hospitalizations')
-                  ->onDelete('cascade')->onUpdate('cascade');
 
         });
     }
@@ -42,7 +39,6 @@ class CreateReservationsTable extends Migration
         Schema::table('reservations', function (Blueprint $table)
         {
             $table->dropPrimary('id');
-            $table->dropForeign(['hospitalization_id']);
         });
         Schema::dropIfExists('reservations');
         Schema::enableForeignKeyConstraints();

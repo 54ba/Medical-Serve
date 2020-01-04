@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'user',
         'passwords' => 'users',
     ],
 
@@ -41,11 +41,14 @@ return [
             'provider' => 'users',
         ],
 
-        'api' => [
-            'driver' => 'token',
+        'user' => [
+            'driver' => 'jwt',
             'provider' => 'users',
-            'hash' => false,
         ],
+        'hospitalization' => [
+            'driver' => 'jwt',
+            'provider' => 'hospitalizations',
+        ]
     ],
 
     /*
@@ -65,11 +68,19 @@ return [
     |
     */
 
-    'providers' => [
-        'users' => [
+    'providers' =>
+     [
+        'users' =>
+        [
             'driver' => 'eloquent',
             'model' => App\User::class,
         ],
+        'hospitalizations' =>
+        [
+            'driver' => 'eloquent',
+            'provider' => App\Hospitalization\Hospitalization::class,
+        ]
+
 
         // 'users' => [
         //     'driver' => 'database',
@@ -95,6 +106,12 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'hospitalizations' => [
+            'provider' => 'hospitalizations',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

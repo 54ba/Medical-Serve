@@ -2,22 +2,28 @@
 
 namespace App\Hosptialization;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\UUID;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Notifications\User\ResetPasswordNotification as UserResetPasswordNotification;
 
-
-class Hospitalization extends Model
+class Hospitalization extends Authenticatable implements JWTSubject
 {
+    use Notifiable;
     use SoftDeletes;
     use UUId;
+
+    protected $guard = 'hospitalization';
 
     
     protected $fillable =
      [
     	'name',
     	'email',
-    	'password'
+    	'password',
+        'slug'
+
     ];
 
       protected $with=
@@ -26,13 +32,14 @@ class Hospitalization extends Model
         'video',
         'address',
         'telephone',
-        'location'
+        'location',
     ];
 
     $hidden =
     [
         'email',
-        'password'
+        'password',
+        'remember_token'
     ];
 
     public function profilePicture(){
@@ -56,5 +63,40 @@ class Hospitalization extends Model
 
     public function location(){
     	return this->hasMany(Location::class);
-    }    
+    }  
+
+     /**
+     * Automatically creates hash for the user password.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
+    }
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    public function sendPasswordResetNotification($token) { 
+        $this->notify(new UserResetPasswordNotification($token));
+    }  
 }

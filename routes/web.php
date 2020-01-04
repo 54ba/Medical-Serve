@@ -11,8 +11,10 @@
 |
 */
 
+
  Route::group(['namespace' => 'Reservation','prefix'=>'sample-reservation','middleware' => ['web','guest']], function () {
 
  	Route::post('/sample-reservation','SampleController@create');
 
 });
+

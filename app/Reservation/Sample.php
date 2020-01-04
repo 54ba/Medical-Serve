@@ -3,21 +3,25 @@
 namespace App\Reservation;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Hosptialization\Lab;
-
+use App\Hosptialization\Lab as Lab;
 
 class Sample extends Reservation
 {
-	//type 1
-	
+	protected $table = 'sample_reservations'
+
       $with = 
     [
+        'reservation',
     	'lab'
     ];
 
+    public function reservation()
+    {
+        $this->belongsTo(Reservation::class);
+    }
     public function lab()
     {
-    	$this->belongsTo(Lab::class)->where('type',1);
+    	$this->belongsTo(Lab::class);
     }
 }
 

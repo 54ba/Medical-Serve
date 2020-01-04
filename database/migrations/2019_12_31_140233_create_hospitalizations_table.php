@@ -20,8 +20,8 @@ class CreateHospitalizationsTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->text('password');
-            $table->integer('type');
             $table->text('slug')->index('slug');
+            $table->rememberToken();
             $table->timestamps();
 
             $table->primary('id');
