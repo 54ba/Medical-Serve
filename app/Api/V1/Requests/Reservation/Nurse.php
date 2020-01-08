@@ -11,7 +11,7 @@ class Nurse extends Reservation
 
 public function rules()
     {
-       return parent::rules() + 
+       return parent::rules() +
         [
             'gender' => 'required|String|min:1|max:191|not_in:0'
         ];
@@ -19,7 +19,7 @@ public function rules()
 
  public function messages()
     {
-        return parent::messages() + 
+        return parent::messages() +
         [
             'slug.required' => 'الرجاء اختيار  المستشفي',
             'gender.required'=> 'الرجاء اختيار جنس الممرض'
@@ -28,20 +28,20 @@ public function rules()
 
      public function store()
     {
-        $reservation = new \App\Reservation\Reservation();
+        $reservation = new \App\Models\Reservation\Reservation();
 
         $reservation->name = $this->name;
         $reservation->mobile_number = $this->mobile_number;
         $reservation->telephone = $this->age;
 
-        $hospitalization = \App\Hospitalization\Hospital::where('slug',$this->slug)->first();
+        $hospitalization = \App\Models\Hospitalization\Hospital::where('slug',$this->slug)->first();
         $reservation->hospitalization_id = $hospitalization->id;
 
-       
+
 
         if ($reservation->save())
         {
-            $nurse = new \App\Reservation\Nurse();
+            $nurse = new \App\Models\Reservation\Nurse();
             $nurse->gender = $this->gender;
             if($nurse->save())
             {
@@ -53,7 +53,7 @@ public function rules()
         }
 
         $response->status = $response::HTTP_INTERNAL_SERVER_ERROR ;
-        
+
         return Response::json($response);
     }
 

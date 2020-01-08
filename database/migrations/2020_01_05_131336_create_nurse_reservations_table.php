@@ -18,7 +18,8 @@ class CreateNurseReservationsTable extends Migration
             $table->string('gender');
             
             $table->uuid('reservation_id');
-            $table->uuid('hosptial_id'); 
+            $table->uuid('hosptial_id');
+            $table->softDeletes(); 
             $table->timestamps();
 
             $table->primary('id');

@@ -3,8 +3,8 @@
 namespace App\Api\V1\Controllers;
 
 use App\Events\Auth\SocialLogin;
-use App\Api\V1\Social\SocialAccount;
-use App\User;
+use App\Models\Auth\User\SocialAccount;
+use App\Models\Auth\User\User;
 use Illuminate\Foundation\Auth\RedirectsUsers;
 use App\Http\Controllers\Controller;
 use Ramsey\Uuid\Uuid;

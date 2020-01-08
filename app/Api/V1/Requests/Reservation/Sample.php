@@ -19,16 +19,16 @@ class Sample extends Reservation
 
      public function store()
     {
-        $sample = new \App\Reservation\Sample();
+        $sample = new \App\Models\Reservation\Sample();
 
         $sample->name = $this->name;
         $sample->mobile_number = $this->mobile_number;
         $sample->telephone = $this->age;
 
-        $hospitalization = \App\Hospitalization\Lab::where('slug',$this->slug)->first();
+        $hospitalization = \App\Models\Hospitalization\Lab::where('slug',$this->slug)->first();
         $sample->hospitalization_id = $hospitalization->id;
 
-       
+
 
         if ($sample->save())
         {
@@ -38,7 +38,7 @@ class Sample extends Reservation
         }
 
         $response->status = $response::HTTP_INTERNAL_SERVER_ERROR ;
-        
+
         return Response::json($response);
 
     }

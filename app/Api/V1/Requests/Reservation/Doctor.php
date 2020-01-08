@@ -16,16 +16,16 @@ class Doctor extends Reservation
     }
      public function store()
     {
-        $doctor = new \App\Reservation\Doctor();
+        $doctor = new \App\Models\Reservation\Doctor();
 
         $doctor->name = $this->name;
         $doctor->mobile_number = $this->mobile_number;
         $doctor->telephone = $this->age;
 
-        $hospitalization = \App\Hospitalization\Doctor::where('slug',$this->slug)->first();
+        $hospitalization = \App\Models\Hospitalization\Doctor::where('slug',$this->slug)->first();
         $doctor->hospitalization_id = $hospitalization->id;
 
-       
+
 
         if ($doctor->save())
         {
@@ -34,7 +34,7 @@ class Doctor extends Reservation
         }
 
         $response->status = $response::HTTP_INTERNAL_SERVER_ERROR ;
-        
+
         return Response::json($response);
 
     }

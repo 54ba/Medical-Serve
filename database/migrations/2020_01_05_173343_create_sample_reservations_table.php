@@ -18,8 +18,8 @@ class CreateSampleReservationsTable extends Migration
             $table->uuid('reservation_id');
 
             $table->uuid('lab_id'); 
+            $table->softDeletes();       
             $table->timestamps();
-
             $table->primary('id');
 
             $table->foreign('reservation_id')->references('id')->on('reservations')

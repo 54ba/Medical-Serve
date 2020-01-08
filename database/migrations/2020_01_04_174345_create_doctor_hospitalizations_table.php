@@ -21,7 +21,7 @@ class CreateDoctorHospitalizationsTable extends Migration
             
             $table->foreign('hospitalization_id')->references('id')->on('hospitalizations')
                   ->onDelete('cascade')->onUpdate('cascade');
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

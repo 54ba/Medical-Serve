@@ -48,7 +48,7 @@ return [
         'hospitalization' => [
             'driver' => 'jwt',
             'provider' => 'hospitalizations',
-        ]
+        ],
     ],
 
     /*
@@ -73,13 +73,13 @@ return [
         'users' =>
         [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => \App\Models\Auth\User\User::class,
         ],
         'hospitalizations' =>
         [
             'driver' => 'eloquent',
-            'provider' => App\Hospitalization\Hospitalization::class,
-        ]
+            'model' => \App\Models\Hospitalization\Hospitalization::class,
+        ],
 
 
         // 'users' => [

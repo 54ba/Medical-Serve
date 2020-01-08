@@ -38,11 +38,32 @@ $api->version('v1', function (Router $api) {
         $api->post('reset', 'App\\Api\\V1\\Controllers\\ResetPasswordController@hospitalizationResetPassword');
         $api->post('refresh', 'App\\Api\\V1\\Controllers\\RefreshController@hospitalizationRefresh');
         $api->post('logout', 'App\\Api\\V1\\Controllers\\LogoutController@hospitalizationLogout');
-
-
-        $api->get('me', 'App\\Api\\V1\\Controllers\\HospitalizationController@hospitalizationreMe');
+        $api->get('me', 'App\\Api\\V1\\Controllers\\Hospitalization\\HospitalizationController@hospitalizationMe');
 
     });
+
+    //doctor operations 
+     $api->group(['prefix' => 'dr'], function(Router $api) {
+            $api->post('create-profile','App\\Api\\V1\\Controllers\\Hospitalization\\DoctorController@createProfile');
+
+            $api->post('edit-profile/{slug}','App\\Api\\V1\\Controllers\\Hospitalization\\DoctorController@editProfile');
+        });
+
+    //lab operations 
+     $api->group(['prefix' => 'lab'], function(Router $api) {
+          $api->post('create-profile','App\\Api\\V1\\Controllers\\Hospitalization\\LabController@createProfile');
+
+            $api->post('edit-profile/{slug}','App\\Api\\V1\\Controllers\\Hospitalization\\LabController@editProfile');
+
+        });
+    //hospital operations 
+
+     $api->group(['prefix' => 'hospital'], function(Router $api) {
+              $api->post('create-profile','App\\Api\\V1\\Controllers\\Hospitalization\\HospitalController@createProfile');
+
+            $api->post('edit-profile/{slug}','App\\Api\\V1\\Controllers\\Hospitalization\\HospitalController@editProfile');
+
+        });
 
     
     $api->group(['middleware' => 'jwt.auth'], function(Router $api) {

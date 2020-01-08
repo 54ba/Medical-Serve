@@ -5,7 +5,8 @@ use Illuminate\Support\Str;
 
 Trait UUID 
 {
-		protected static function boot()
+		
+	protected static function boot()
 	{
 	    parent::boot();
 

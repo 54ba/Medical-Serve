@@ -2,10 +2,17 @@
 
 namespace App\Api\V1\Requests\Hospitalization;
 
+use Faker\Provider\Image;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
+use App\Models\Information\Picture;
+use App\Models\Information\Address;
+use App\Models\Information\Location;
+use App\Models\Information\Telephone;
+use App\Models\Information\Video;
+
 
 class Hospitalization extends FormRequest
 {
@@ -19,6 +26,7 @@ class Hospitalization extends FormRequest
 
     ];
 
+
      /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,14 +34,14 @@ class Hospitalization extends FormRequest
      */
     public function authorize()
     {
-        return true;
+       return true;
     }
 
      /**
      * The data to be validated should be processed as JSON.
      * @return mixed
      */
-    protected function validationData()
+    public function validationData()
     {
         return $this->json()->all();
     }
@@ -54,9 +62,8 @@ class Hospitalization extends FormRequest
     {
         return [
             'name' => 'required|String|min:1|max:191',
-            'email' => 'required|String|email|unique:hospitalizations|min:1|max:20',
-            'password' => 'required|String|min:6|max:255',
-            'confirm_password'=> 'required|confirmed|min:6',
+            'password' => 'required|String|confirmed|min:6|max:255',
+            'password_confirmation'=> 'required|min:6',
             'picture' => 'image|mimes:jpeg,png,jpg|max:2048',
             'video' => 'mimetypes:video/x-ms-asf,video/x-flv,video/mp4,application/x-mpegURL,video/MP2T,video/3gpp,video/quicktime,video/x-msvideo,video/x-ms-wmv,video/avi',
             'address' => 'array|min:1',
@@ -75,14 +82,14 @@ class Hospitalization extends FormRequest
       public function messages()
     {
         return [
-            
+
             'name.required' => 'الرجاء ادخال الاسم',
             'email.required' => 'الرجاء ادخال البريد الالكتروني',
             'password.required' => 'الجراء ادخال كلمة المرور',
-            'confirm_password.required' => 'الرجاء ادخال تأكيد كلمة المرور',
+            'password_confirmation.required' => 'الرجاء ادخال تأكيد كلمة المرور',
             'telephone.required' => 'الرجاء ادخال رقم التليفون',
-            
-            
+
+
         ];
     }
 
@@ -90,102 +97,133 @@ class Hospitalization extends FormRequest
     public function store()
     {
 
-        if(null != $this->picture)
-        {
-            // TODO::upload picture 
 
+        if($this->has('picture'))
+        {
+            // TODO::upload picture
             $this->objects['picture'] = new Picutre();
-            $this->objects['picture']->source = $this->picture;
+            $this->objects['picture']->source = $this->picture->hashName();
+            Image::make(storage_path($this->objects['picture']->upload_path .$this->objects['picture']->source ))
+                ->resize(750, 579)
+                ->encode('png', 100)
+                ->save(storage_path($this->objects['picture']->upload_path .$this->objects['picture']->source ));
 
         }
 
-        if(null != $this->video)
+        if($this->has('video'))
         {
-            // TODO::upload video 
+            // TODO::upload video
             $this->objects['video'] = new Video();
             $this->objects['video']->source = $this->video;
 
         }
 
-        if($longitude_length = count($longitudes = $this->longitude) && $latitude_length = count($latitudes = $this->latitude) && $longitude_length == $latitude_length )
+        if(is_array($this->longitude) && is_array($this->latitude))
         {
-            foreach ($longitudes as  $key => $longitude_input ) {
-                $this->objects['locations'][$key] = new Location();
-                $this->objects['locations'][$key]->longitude = $longitude_input;
-                $this->objects['locations'][$key]->latitude = $latitudes[$key];
+            if(($longitude_length = count($longitudes = $this->longitude))&&( $latitude_length = count($latitudes = $this->latitude)) && ($longitude_length == $latitude_length ))
+            {
+                foreach ($longitudes as  $key => $longitude_input )
+                {
+                    $this->objects['locations'][$key] = new Location();
+                    $this->objects['locations'][$key]->longitude = $longitude_input;
+                    $this->objects['locations'][$key]->latitude = $latitudes[$key];
 
-            }
+                }
 
-        }
-
-        if(count($telephones = $this->telephone))
-        {
-            foreach ($telephones as $key => $telephone_input ) {
-                $this->objects['telephones'][$key] = new Telephone();
-                $this->objects['telephones'][$key]->telephone = $telephone_input;
             }
         }
 
 
-        if(count($addresses = $this->address))
+        if(is_array($this->telephone))
         {
-            foreach ($addresses as $key => $address_input ) {
-                $this->objects['addresses'][$key] = new Address();
-                $this->objects['addresses'][$key]->address = $address_input;
+
+            if(count($telephones = $this->telephone))
+            {
+                foreach ($telephones as $key => $telephone_input )
+                {
+                    $this->objects['telephones'][$key] = new Telephone();
+                    $this->objects['telephones'][$key]->telephone = $telephone_input;
+                }
             }
+
         }
 
+        if(is_array($this->address))
+        {
+            if(count($addresses = $this->address))
+            {
+                foreach ($addresses as $key => $address_input )
+                {
+                    $this->objects['addresses'][$key] = new Address();
+                    $this->objects['addresses'][$key]->address = $address_input;
+                }
+            }
+        }
 
     }
 
-    public function edit()
+    public function edit($slug =false)
     {
-        
-        if(null != $this->picture)
+
+        if($this->has('picture'))
         {
-            // TODO::upload picture 
+            // TODO::upload picture
 
             $this->objects['picture'] = new Picutre();
-            $this->objects['picture']->source = $this->picture;
+            $this->objects['picture']->source = $this->picture->hashName();
 
         }
 
-        if(null != $this->video)
+        if($this->has('video'))
         {
-            // TODO::upload video 
+            // TODO::upload video
             $this->objects['video'] = new Video();
-            $this->objects['video']->source = $this->video;
+            $this->objects['video']->source = $this->video->hashName();
 
         }
 
-        if($longitude_length = count($longitudes = $this->longitude) && $latitude_length = count($latitudes = $this->latitude) && $longitude_length == $latitude_length )
+        if(is_array($this->longitude) && is_array($this->latitude))
         {
-            foreach ($longitudes as  $key => $longitude_input ) {
-                $this->objects['locations'][$key] = new Location();
-                $this->objects['locations'][$key]->longitude = $longitude_input;
-                $this->objects['locations'][$key]->latitude = $latitudes[$key];
 
-            }
+            if(($longitude_length = count($longitudes = $this->longitude)) && ($latitude_length = count($latitudes = $this->latitude)) && ($longitude_length == $latitude_length ))
+            {
+                foreach ($longitudes as  $key => $longitude_input ) {
+                    $this->objects['locations'][$key] = new Location();
+                    $this->objects['locations'][$key]->longitude = $longitude_input;
+                    $this->objects['locations'][$key]->latitude = $latitudes[$key];
 
-        }
+                }
 
-        if(count($telephones = $this->telephone))
-        {
-            foreach ($telephones as $key => $telephone_input ) {
-                $this->objects['telephones'][$key] = new Telephone();
-                $this->objects['telephones'][$key]->telephone = $telephone_input;
             }
         }
 
 
-        if(count($addresses = $this->address))
+        if(is_array($this->telephone))
         {
-            foreach ($addresses as $key => $address_input ) {
-                $this->objects['addresses'][$key] = new Address();
-                $this->objects['addresses'][$key]->address = $address_input;
+
+
+            if(count($telephones = $this->telephone))
+            {
+                foreach ($telephones as $key => $telephone_input ) {
+                    $this->objects['telephones'][$key] = new Telephone();
+                    $this->objects['telephones'][$key]->telephone = $telephone_input;
+                }
             }
+
         }
 
+
+        if(is_array($this->address))
+        {
+
+            if(count($addresses = $this->address))
+            {
+                foreach ($addresses as $key => $address_input ) {
+                    $this->objects['addresses'][$key] = new Address();
+                    $this->objects['addresses'][$key]->address = $address_input;
+                }
+            }
+        }
 
     }
 }

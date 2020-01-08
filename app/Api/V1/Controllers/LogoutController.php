@@ -3,7 +3,7 @@
 namespace App\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class LogoutController extends Controller
 {
@@ -14,7 +14,9 @@ class LogoutController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwt.auth', []);
+        $this->middleware('jwt.auth', ['only' => ['logout']]);
+        $this->middleware('hospitalization.auth', ['only' => ['hospitalizationLogout']]);
+
     }
 
     /**

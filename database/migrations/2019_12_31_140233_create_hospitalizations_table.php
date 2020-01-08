@@ -22,6 +22,7 @@ class CreateHospitalizationsTable extends Migration
             $table->text('password');
             $table->text('slug')->index('slug');
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
 
             $table->primary('id');

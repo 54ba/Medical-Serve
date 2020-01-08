@@ -13,80 +13,81 @@ class Hospital extends Hospitalization
 
         parent::store();
 
-        $hospital = new \App\Hospitalization\Hospital();
-        $hospitalization = new \App\Hospitalization\Hospitalization();
+        $hospital = new \App\Models\Hospitalization\Hospital();
+        $hospitalization = new \App\Models\Hospitalization\Hospitalization();
 
         $hospitalization->name = $this->name;
         $hospitalization->email = $this->email;
         $hospitalization->password = bcrypt($this->password);
 
         $hospitalization->slug = str_slug($hospitalization->name);
-        
-        while(\App\Hospitalization\Hospitalization::where('slug',$hospitalization->slug)->first())
+
+        while(\App\Models\Hospitalization\Hospitalization::where('slug',$hospitalization->slug)->first())
         {
-            $hospitalization->slug = $hospitalization->slug . '-'. str_random(2);
+            $hospitalization->slug .= '-' . str_random(2);
         }
 
         $response = new Response();
-        
-        if ($hospitalization->save())
+
+        if ($hospitalization->save() && $hospitalization->hospital()->save($hospital))
             {
-                $hospital->hospitalization = $hospitalization;
-                if ( $hospital->save())
+               $hospitalization->refresh();
+            try
+            {
+                foreach ($this->objects as $object)
                 {
-                    try
+
+                    if(is_array($object) && count($object))
                     {
-                         foreach ($this->objects as $object) 
+                        //object is array of objects
+
+                        array_map(function($information) use ($hospitalization)
                         {
 
-                            if(is_array($object) && count($object))
-                            {   
-                                //object is array of objects
-
-                                array_map(function($information)
-                                {
-                                    $information->hospitalization_id = $hospital->id;
-                                    $information->save();
-
-                                }, $object);
-                            }elseif (null != $object && !empty($object) )
-                            {
-                                
-                            }
-                        }
-                    }catch(e)
-                    {
-                        $response->status = $response::HTTP_INTERNAL_SERVER_ERROR ;
-                        return Response::json($response);
+                            $information->hospitalization_id = $hospitalization->id;
+                            $information->save();
+                        }, $object);
                     }
+                }
+            }catch(Exception $e)
+            {
 
+
+                $response->status = $response::HTTP_INTERNAL_SERVER_ERROR ;
+                return Response::json($response);
+            }
 
                     $response->status = $response::HTTP_OK;
-                    return Response::json($response);
-                }
-            }
+                    return response()->json($response);
+        }
 
         $response->status = $response::HTTP_INTERNAL_SERVER_ERROR ;
         return Response::json($response);
 
     }
 
-
-      public function edit($slug)
+      public function edit($slug = false)
     {
+
+         if($slug == false )
+        {
+            return abort(404);
+        }
 
         parent::edit();
 
-        $hospital = \App\Hospitalization\Hospital::where('slug',$slug)->firstOrFail();
+        $hospital = \App\Models\Hospitalization\Hospital::where('slug',$slug)->firstOrFail();
 
-        $hospital->hospitalization->name = $this->name;
         $hospital->hospitalization->email = $this->email;
         $hospital->hospitalization->password = bcrypt($this->password); //needs edit
-
-        $hospital->hospitalization->slug = str_slug($hospital->name);
-        while(\App\Hospitalization\Hospitalization::where('slug',$hospital->hospitalization->slug)->first())
+        if( $hospital->hospitalization->name != $this->name)
         {
-            $hospital->hospitalization->slug = $hospital->hospitalization->slug .'-'. str_random(2);
+            $hospital->hospitalization->name = $this->name;
+            $hospital->hospitalization->slug = str_slug($hospital->name);
+            while(\App\Models\Hospitalization\Hospitalization::where('slug',$hospital->hospitalization->slug)->first())
+            {
+                $hospital->hospitalization->slug .= '-' . str_random(2);
+            }
         }
         $response = new Response();
 
@@ -94,25 +95,28 @@ class Hospital extends Hospitalization
         {
             try
             {
-                 foreach ($this->objects as $object) 
+                $hospital->hospitalization->refresh();
+
+                 foreach ($this->objects as $object)
                 {
 
                     if(is_array($object) && count($object))
-                    {   
+                    {
                         //object is array of objects
 
-                        array_map(function($information)
+                        array_map(function($information) use ($hospital)
                         {
-                            $information->hospitalization_id = $hospital->id;
+                            $information->hospitalization_id = $hospital->hospitalization->id;;
                             $information->save();
 
                         }, $object);
-                    }elseif (null != $object && !empty($object) )
+                    }elseif(null != $object && !empty($object))
                     {
-                        
+                        $object->hospitalization_id = $hospital->hospitalization->id;
+                        $object->save();
                     }
                 }
-            }catch(e)
+            }catch(Exception $e)
             {
                 $response->status = $response::HTTP_INTERNAL_SERVER_ERROR ;
                 return Response::json($response);

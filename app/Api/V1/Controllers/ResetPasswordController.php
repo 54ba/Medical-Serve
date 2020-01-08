@@ -3,8 +3,8 @@
 namespace App\Api\V1\Controllers;
 
 use Config;
-use App\User;
-use App\Hospitalization\Hospitalization;
+use App\Models\Auth\User\User;
+use App\Models\Hospitalization\Hospitalization;
 use Tymon\JWTAuth\JWTAuth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Password;

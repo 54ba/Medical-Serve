@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Api\V1\Controllers\Hosptialization;
+namespace App\Api\V1\Controllers\Hospitalization;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class HosptializationController extends Controller
+class HospitalizationController extends Controller
 {
 
      /**
@@ -15,7 +15,7 @@ class HosptializationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwt.auth', []);
+        $this->middleware('hospitalization.auth', []);
     }
 
     /**
@@ -23,8 +23,10 @@ class HosptializationController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function hospitalizationreMe()
+    public function hospitalizationMe()
     {
-        return response()->json(Auth::guard('hospitalization')->user());
+        // auth()->shouldUse('member');
+
+        return response()->json(auth()->guard('hospitalization')->userOrFail());
     }
 }

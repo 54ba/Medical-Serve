@@ -2,8 +2,8 @@
 
 namespace App\Api\V1\Controllers;
 
-use App\User;
-use App\Hospitalization\Hospitalization;
+use App\Models\Auth\User\User;
+use App\Models\Hospitalization\Hospitalization;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Password;
 use App\Api\V1\Requests\ForgotPasswordRequest;
@@ -61,5 +61,5 @@ class ForgotPasswordController extends Controller
             'status' => 'ok'
         ], 200);
     }
-    
+
 }
