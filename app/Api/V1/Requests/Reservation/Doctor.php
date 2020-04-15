@@ -25,7 +25,7 @@ class Doctor extends Reservation
         $hospitalization = \App\Models\Hospitalization\Doctor::where('slug',$this->slug)->first();
         $doctor->hospitalization_id = $hospitalization->id;
 
-
+        $response = new Response();
 
         if ($doctor->save())
         {

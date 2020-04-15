@@ -28,6 +28,7 @@ class Sample extends Reservation
         $hospitalization = \App\Models\Hospitalization\Lab::where('slug',$this->slug)->first();
         $sample->hospitalization_id = $hospitalization->id;
 
+        $response = new Response();
 
 
         if ($sample->save())

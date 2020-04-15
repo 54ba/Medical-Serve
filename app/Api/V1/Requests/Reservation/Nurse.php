@@ -37,6 +37,7 @@ public function rules()
         $hospitalization = \App\Models\Hospitalization\Hospital::where('slug',$this->slug)->first();
         $reservation->hospitalization_id = $hospitalization->id;
 
+        $response = new Response();
 
 
         if ($reservation->save())

@@ -25,7 +25,7 @@ class Reservation extends FormRequest
      * The data to be validated should be processed as JSON.
      * @return mixed
      */
-    protected function validationData()
+    public function validationData()
     {
         return $this->json()->all();
     }
@@ -56,14 +56,14 @@ class Reservation extends FormRequest
       public function messages()
     {
         return [
-            
+
             'name.required' => 'الرجاء ادخال الاسم',
             'mobile_number.required' => 'الرجاء ادخال رقم الموبايل',
             'telephone.required' => 'الرجاء ادخال رقم التليفون',
-            
+
         ];
     }
 
-    
+
 
 }
